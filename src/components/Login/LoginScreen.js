@@ -1,19 +1,26 @@
-import { StyleSheet, View, Text, TouchableOpacity, Alert } from "react-native";
+import React, { useEffect, useState } from "react";
+import { StyleSheet, View, Text, TouchableOpacity, Alert, TextInput } from "react-native";
 import * as LocalAuthentication from 'expo-local-authentication'
 
 export default function Login() {
+    const [isBiometricSupported, setIsBiometricSupported] = useState();
+
+    useEffect( () =>
+        async function handleBiometricAuth() {
+            const types = await LocalAuthentication.supportedAuthenticationTypesAsync().then((res) => console.log(res))
+            const compatible = await LocalAuthentication.hasHardwareAsync().then((res) => console.log(res))
+            setIsBiometricSupported(compatible)
+        }, []
+    )
 
     function theresIsBiometricAuth() {
-        biometrics = LocalAuthentication.isEnrolledAsync()
-        if (biometrics) {
-            log()
-        } else {
-            Alert.alert(
-                "Não foi encontrado nenhuma biometrica cadastrada",
-                "Faça login utilizando sua senha padrão",
-                "Voltar"
-            )
-        }
+        biometrics = LocalAuthentication.isEnrolledAsync().then((res) => console.log(res))
+        biometrics ? log() : 
+                            Alert.alert(
+                                "Não foi encontrado nenhuma biometria cadastrada",
+                                "Faça login utilizando sua senha padrão",
+                                "Voltar"
+                            )
     }
 
     function log() {
